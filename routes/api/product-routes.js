@@ -7,20 +7,12 @@ const { Product, Category, Tag, ProductTag } = require("../../models");
 router.get("/", (req, res) => {
   console.log("============================");
   Product.findAll({
-    attributes: ["id", "product_name", "price", "stock", "category_id"],
     include: [
-      {
-        model: Category,
-        attributes: ["id", "category_name"],
-      },
-      {
-        model: Tag,
-        through: ProductTag,
-        attributes: ["tag_name"],
-      },
+      { model: Category },
+      { model: Tag, through: ProductTag, as: "product_tags" },
     ],
   })
-    .then((dbPostData) => res.json(dbPostData))
+    .then((dbData) => res.json(dbData))
     .catch((err) => {
       console.log(err);
       res.status(500).json(err);
@@ -30,23 +22,18 @@ router.get("/", (req, res) => {
 // get one product
 router.get("/:id", (req, res) => {
   Product.findOne({
-    where: {
-      id: req.params.id,
-    },
-    attributes: ["id", "post_url", "title", "created_at"],
+    where: { id: req.params.id },
     include: [
-      {
-        model: User,
-        attributes: ["username"],
-      },
+      { model: Category },
+      { model: Tag, through: ProductTag, as: "product_tags" },
     ],
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No post found with this id" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);
@@ -131,15 +118,15 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   Product.destroy({
     where: {
-      id: req.body.id,
+      id: req.params.id,
     },
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No product found with this ID" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);

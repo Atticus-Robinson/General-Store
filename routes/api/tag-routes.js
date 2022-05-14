@@ -6,16 +6,15 @@ const { Tag, Product, ProductTag } = require("../../models");
 router.get("/", (req, res) => {
   console.log("============================");
   Tag.findAll({
-    attributes: ["id", "tag_name"],
     include: [
       {
         model: Product,
         through: ProductTag,
-        attributes: ["id", "product_name", "price", "stock", "category_id"],
+        as: "product_tags",
       },
     ],
   })
-    .then((dbPostData) => res.json(dbPostData))
+    .then((dbData) => res.json(dbData))
     .catch((err) => {
       console.log(err);
       res.status(500).json(err);
@@ -24,17 +23,21 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
   Tag.findOne({
-    where: {
-      id: req.params.id,
-    },
-    attributes: [],
+    where: { id: req.params.id },
+    include: [
+      {
+        model: Product,
+        through: ProductTag,
+        as: "product_tags",
+      },
+    ],
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
-        res.status(404).json({ message: "No post found with this id" });
+    .then((dbData) => {
+      if (!dbData) {
+        res.status(404).json({ message: "No tag found with this id" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);
@@ -43,8 +46,8 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  Tag.create({})
-    .then((dbPostData) => res.json(dbPostData))
+  Tag.create(req.body)
+    .then((dbData) => res.json(dbData))
     .catch((err) => {
       {
         console.log(err);
@@ -54,13 +57,13 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  Tag.update({})
-    .then((dbPostData) => {
-      if (!dbPostData) {
+  Tag.update(req.body, { where: { id: req.params.id } })
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No tag found with this ID" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);
@@ -69,17 +72,13 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Tag.destroy({
-    where: {
-      id: req.body.id,
-    },
-  })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+  Tag.destroy({ where: { id: req.params.id } })
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No tag found with this ID" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);

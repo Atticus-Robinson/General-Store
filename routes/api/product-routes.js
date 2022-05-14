@@ -1,18 +1,22 @@
-const router = require('express').Router();
-const { Product, Category, Tag, ProductTag } = require('../../models');
+const router = require("express").Router();
+const { Product, Category, Tag, ProductTag } = require("../../models");
 
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   console.log("============================");
-  Post.findAll({
-    attributes: ["id", "post_url", "title", "created_at"],
-    order: [["created_at", "DESC"]],
+  Product.findAll({
+    attributes: ["id", "product_name", "price", "stock", "category_id"],
     include: [
       {
-        model: User,
-        attributes: ["username"],
+        model: Category,
+        attributes: ["id", "category_name"],
+      },
+      {
+        model: Tag,
+        through: ProductTag,
+        attributes: ["tag_name"],
       },
     ],
   })
@@ -24,8 +28,8 @@ router.get('/', (req, res) => {
 });
 
 // get one product
-router.get('/:id', (req, res) => {
-  Post.findOne({
+router.get("/:id", (req, res) => {
+  Product.findOne({
     where: {
       id: req.params.id,
     },
@@ -51,7 +55,7 @@ router.get('/:id', (req, res) => {
 });
 
 // create new product
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -83,7 +87,7 @@ router.post('/', (req, res) => {
 });
 
 // update product
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   // update product data
   Product.update(req.body, {
     where: {
@@ -124,8 +128,23 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+router.delete("/:id", (req, res) => {
+  Product.destroy({
+    where: {
+      id: req.body.id,
+    },
+  })
+    .then((dbPostData) => {
+      if (!dbPostData) {
+        res.status(404).json({ message: "No product found with this ID" });
+        return;
+      }
+      res.json(dbPostData);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 module.exports = router;

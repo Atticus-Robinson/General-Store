@@ -1,17 +1,14 @@
 const router = require("express").Router();
 const { Category, Product } = require("../../models");
 
-// The `/api/categories` endpoint
-
 router.get("/", (req, res) => {
   console.log("============================");
-  Post.findAll({
-    attributes: ["id", "post_url", "title", "created_at"],
-    order: [["created_at", "DESC"]],
+  Category.findAll({
+    attributes: ["id", "category_name"],
     include: [
       {
-        model: User,
-        attributes: ["username"],
+        model: Product,
+        attributes: ["id", "product_name", "price", "stock", "category_id"],
       },
     ],
   })
@@ -23,7 +20,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  Post.findOne({
+  Category.findOne({
     where: {
       id: req.params.id,
     },
@@ -49,10 +46,8 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  Post.create({
-    title: req.body.title,
-    post_url: req.body.post_url,
-    user_id: req.body.user_id,
+  Category.create({
+    category_name: req.body.category_name,
   })
     .then((dbPostData) => res.json(dbPostData))
     .catch((err) => {
@@ -64,9 +59,9 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  Post.update(
+  Category.update(
     {
-      title: req.body.title,
+      category_name: req.body.category_name,
     },
     {
       where: {
@@ -88,14 +83,15 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Post.destroy({
+  console.log(req.body);
+  Category.destroy({
     where: {
-      id: req.body.id,
+      id: req.params.id,
     },
   })
     .then((dbPostData) => {
       if (!dbPostData) {
-        res.status(404).json({ message: "No post found with this ID" });
+        res.status(404).json({ message: "No tag category with this ID" });
         return;
       }
       res.json(dbPostData);

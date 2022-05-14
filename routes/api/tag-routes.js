@@ -15,7 +15,7 @@ router.get("/", (req, res) => {
       },
     ],
   })
-    .then((dbPostData) => res.json(dbPostData))
+    .then((dbData) => res.json(dbData))
     .catch((err) => {
       console.log(err);
       res.status(500).json(err);
@@ -29,12 +29,12 @@ router.get("/:id", (req, res) => {
     },
     attributes: [],
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No post found with this id" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);
@@ -44,7 +44,7 @@ router.get("/:id", (req, res) => {
 
 router.post("/", (req, res) => {
   Tag.create({})
-    .then((dbPostData) => res.json(dbPostData))
+    .then((dbData) => res.json(dbData))
     .catch((err) => {
       {
         console.log(err);
@@ -55,12 +55,12 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   Tag.update({})
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No tag found with this ID" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);
@@ -74,12 +74,12 @@ router.delete("/:id", (req, res) => {
       id: req.body.id,
     },
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No tag found with this ID" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);

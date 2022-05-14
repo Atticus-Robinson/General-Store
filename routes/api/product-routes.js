@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
       },
     ],
   })
-    .then((dbPostData) => res.json(dbPostData))
+    .then((dbData) => res.json(dbData))
     .catch((err) => {
       console.log(err);
       res.status(500).json(err);
@@ -41,12 +41,12 @@ router.get("/:id", (req, res) => {
       },
     ],
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No post found with this id" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);
@@ -134,12 +134,12 @@ router.delete("/:id", (req, res) => {
       id: req.body.id,
     },
   })
-    .then((dbPostData) => {
-      if (!dbPostData) {
+    .then((dbData) => {
+      if (!dbData) {
         res.status(404).json({ message: "No product found with this ID" });
         return;
       }
-      res.json(dbPostData);
+      res.json(dbData);
     })
     .catch((err) => {
       console.log(err);

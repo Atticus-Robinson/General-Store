@@ -6,11 +6,11 @@ const { Tag, Product, ProductTag } = require("../../models");
 router.get("/", (req, res) => {
   console.log("============================");
   Tag.findAll({
+    attributes: ["id", "tag_name"],
     include: [
       {
         model: Product,
-        through: ProductTag,
-        as: "product_tags",
+        attributes: ["id", "product_name", "price", "stock", "category_id"],
       },
     ],
   })
@@ -27,8 +27,7 @@ router.get("/:id", (req, res) => {
     include: [
       {
         model: Product,
-        through: ProductTag,
-        as: "product_tags",
+        attributes: ["id", "price", "stock", "category_id"],
       },
     ],
   })
@@ -46,7 +45,9 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  Tag.create(req.body)
+  Tag.create({
+    tag_name: req.body.tag_name,
+  })
     .then((dbData) => res.json(dbData))
     .catch((err) => {
       {
@@ -57,7 +58,11 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  Tag.update(req.body, { where: { id: req.params.id } })
+  Tag.update(req.body, {
+    where: {
+      id: req.params.id,
+    },
+  })
     .then((dbData) => {
       if (!dbData) {
         res.status(404).json({ message: "No tag found with this ID" });
@@ -72,7 +77,11 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Tag.destroy({ where: { id: req.params.id } })
+  Tag.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
     .then((dbData) => {
       if (!dbData) {
         res.status(404).json({ message: "No tag found with this ID" });
